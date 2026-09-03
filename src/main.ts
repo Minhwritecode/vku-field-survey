@@ -121,12 +121,12 @@ function renderAppUI() {
             <div class="form-group">
               <label for="roomType" id="i18n-roomTypeLabel">${t('roomTypeLabel')}</label>
               <select id="roomType" class="input-control">
-                <option value="Classroom">🏫 Classroom</option>
-                <option value="Computer Lab">💻 Computer Lab</option>
-                <option value="Lecture Hall">🎭 Lecture Hall</option>
-                <option value="Faculty Office">🏢 Faculty / Staff Office</option>
-                <option value="Restroom">🚻 Restroom</option>
-                <option value="Basement Equipment Room">⚙️ Basement / Server Room</option>
+                <option value="Classroom">${t('roomTypeClassroom')}</option>
+                <option value="Computer Lab">${t('roomTypeComputerLab')}</option>
+                <option value="Lecture Hall">${t('roomTypeLectureHall')}</option>
+                <option value="Faculty Office">${t('roomTypeFacultyOffice')}</option>
+                <option value="Restroom">${t('roomTypeRestroom')}</option>
+                <option value="Basement Equipment Room">${t('roomTypeServerRoom')}</option>
               </select>
             </div>
           </div>
@@ -141,13 +141,13 @@ function renderAppUI() {
             <div class="form-group">
               <label for="category" id="i18n-categoryLabel">${t('categoryLabel')}</label>
               <select id="category" class="input-control">
-                <option value="Hardware">💻 Hardware / Computers</option>
-                <option value="Projector">📹 Projector & Displays</option>
-                <option value="AC">❄️ Air Conditioner / HVAC</option>
-                <option value="Electrical">⚡ Electrical & Lighting</option>
-                <option value="Furniture">🪑 Furniture & Fixtures</option>
-                <option value="Network">🌐 Router & Access Point</option>
-                <option value="Safety">🧯 Safety & Fire Equipment</option>
+                <option value="Hardware">${t('categoryHardware')}</option>
+                <option value="Projector">${t('categoryProjector')}</option>
+                <option value="AC">${t('categoryAC')}</option>
+                <option value="Electrical">${t('categoryElectrical')}</option>
+                <option value="Furniture">${t('categoryFurniture')}</option>
+                <option value="Network">${t('categoryNetwork')}</option>
+                <option value="Safety">${t('categorySafety')}</option>
               </select>
             </div>
             <div class="form-group">
@@ -160,19 +160,19 @@ function renderAppUI() {
             <div class="form-group">
               <label for="operationalStatus" id="i18n-operationalStatusLabel">${t('operationalStatusLabel')}</label>
               <select id="operationalStatus" class="input-control">
-                <option value="Functional">🟢 Functional (Normal)</option>
-                <option value="Maintenance Needed">🟡 Maintenance Needed</option>
-                <option value="Out of Order">🔴 Out of Order / Damaged</option>
-                <option value="Critical Hazard">⚠️ Critical Hazard / Danger</option>
+                <option value="Functional">${t('statusFunctional')}</option>
+                <option value="Maintenance Needed">${t('statusMaintenance')}</option>
+                <option value="Out of Order">${t('statusOutOfOrder')}</option>
+                <option value="Critical Hazard">${t('statusCritical')}</option>
               </select>
             </div>
             <div class="form-group">
               <label for="priorityLevel" id="i18n-priorityLevelLabel">${t('priorityLevelLabel')}</label>
               <select id="priorityLevel" class="input-control">
-                <option value="Low">Low (Routine Check)</option>
-                <option value="Medium" selected>Medium (Standard)</option>
-                <option value="High">High (Urgent Repair)</option>
-                <option value="Emergency">Emergency (Immediate)</option>
+                <option value="Low">${t('priorityLow')}</option>
+                <option value="Medium" selected>${t('priorityMedium')}</option>
+                <option value="High">${t('priorityHigh')}</option>
+                <option value="Emergency">${t('priorityEmergency')}</option>
               </select>
             </div>
           </div>
@@ -204,25 +204,25 @@ function renderAppUI() {
             <label id="i18n-issueTagsLabel">${t('issueTagsLabel')}</label>
             <div class="chip-group" id="issue-tags-group">
               <label class="chip-tag">
-                <input type="checkbox" value="Power Failure" /> ⚡ Power Failure
+                <input type="checkbox" value="Power Failure" /> ${t('tagPowerFailure')}
               </label>
               <label class="chip-tag">
-                <input type="checkbox" value="Physical Damage" /> 🔨 Physical Damage
+                <input type="checkbox" value="Physical Damage" /> ${t('tagPhysicalDamage')}
               </label>
               <label class="chip-tag">
-                <input type="checkbox" value="Overheating" /> 🌡️ Overheating
+                <input type="checkbox" value="Overheating" /> ${t('tagOverheating')}
               </label>
               <label class="chip-tag">
-                <input type="checkbox" value="Noisy Operation" /> 🔊 Noisy Operation
+                <input type="checkbox" value="Noisy Operation" /> ${t('tagNoisyOperation')}
               </label>
               <label class="chip-tag">
-                <input type="checkbox" value="Network Disconnected" /> 📡 Disconnected
+                <input type="checkbox" value="Network Disconnected" /> ${t('tagDisconnected')}
               </label>
               <label class="chip-tag">
-                <input type="checkbox" value="Water Leakage" /> 💧 Water Leakage
+                <input type="checkbox" value="Water Leakage" /> ${t('tagWaterLeakage')}
               </label>
               <label class="chip-tag">
-                <input type="checkbox" value="Missing Parts" /> 🧩 Missing Parts
+                <input type="checkbox" value="Missing Parts" /> ${t('tagMissingParts')}
               </label>
             </div>
           </div>
@@ -230,10 +230,10 @@ function renderAppUI() {
           <div class="form-group">
             <label for="actionRequired" id="i18n-actionRequiredLabel">${t('actionRequiredLabel')}</label>
             <select id="actionRequired" class="input-control">
-              <option value="Inspection Only">🔍 Log Inspection Only</option>
-              <option value="On-site Maintenance">🛠️ On-site Maintenance</option>
-              <option value="Parts Replacement">🔩 Parts Replacement Required</option>
-              <option value="Complete Replacement">🔄 Complete Equipment Replacement</option>
+              <option value="Inspection Only">${t('actionInspectionOnly')}</option>
+              <option value="On-site Maintenance">${t('actionOnSiteMaintenance')}</option>
+              <option value="Parts Replacement">${t('actionPartsReplacement')}</option>
+              <option value="Complete Replacement">${t('actionCompleteReplacement')}</option>
             </select>
           </div>
 

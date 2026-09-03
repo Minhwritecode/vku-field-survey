@@ -51,7 +51,45 @@ export const translations: Record<Language, Record<string, string>> = {
     toastOnline: 'Network connected! Ready to synchronize.',
     toastOffline: 'Offline mode active. Surveys will save to IndexedDB drafts!',
     toastSavedToQueue: 'Audit record saved to IndexedDB Sync Queue!',
-    toastSyncSuccess: 'All audit records successfully synchronized to Cloud Database!'
+    toastSyncSuccess: 'All audit records successfully synchronized to Cloud Database!',
+    // Room type options
+    roomTypeClassroom: '🏫 Classroom',
+    roomTypeComputerLab: '💻 Computer Lab',
+    roomTypeLectureHall: '🎭 Lecture Hall',
+    roomTypeFacultyOffice: '🏢 Faculty / Staff Office',
+    roomTypeRestroom: '🚻 Restroom',
+    roomTypeServerRoom: '⚙️ Basement / Server Room',
+    // Category options
+    categoryHardware: '💻 Hardware / Computers',
+    categoryProjector: '📹 Projector & Displays',
+    categoryAC: '❄️ Air Conditioner / HVAC',
+    categoryElectrical: '⚡ Electrical & Lighting',
+    categoryFurniture: '🪑 Furniture & Fixtures',
+    categoryNetwork: '🌐 Router & Access Point',
+    categorySafety: '🧯 Safety & Fire Equipment',
+    // Operational status options
+    statusFunctional: '🟢 Functional (Normal)',
+    statusMaintenance: '🟡 Maintenance Needed',
+    statusOutOfOrder: '🔴 Out of Order / Damaged',
+    statusCritical: '⚠️ Critical Hazard / Danger',
+    // Priority level options
+    priorityLow: 'Low (Routine Check)',
+    priorityMedium: 'Medium (Standard)',
+    priorityHigh: 'High (Urgent Repair)',
+    priorityEmergency: 'Emergency (Immediate)',
+    // Issue tags
+    tagPowerFailure: '⚡ Power Failure',
+    tagPhysicalDamage: '🔨 Physical Damage',
+    tagOverheating: '🌡️ Overheating',
+    tagNoisyOperation: '🔊 Noisy Operation',
+    tagDisconnected: '📡 Disconnected',
+    tagWaterLeakage: '💧 Water Leakage',
+    tagMissingParts: '🧩 Missing Parts',
+    // Action required options
+    actionInspectionOnly: '🔍 Log Inspection Only',
+    actionOnSiteMaintenance: '🛠️ On-site Maintenance',
+    actionPartsReplacement: '🔩 Parts Replacement Required',
+    actionCompleteReplacement: '🔄 Complete Equipment Replacement'
   },
   vi: {
     appTitle: 'Khảo Sát VKU',
@@ -103,7 +141,45 @@ export const translations: Record<Language, Record<string, string>> = {
     toastOnline: 'Đã kết nối mạng Trực tuyến! Sẵn sàng đồng bộ.',
     toastOffline: 'Đang ngoại tuyến. Dữ liệu sẽ tự động lưu vào IndexedDB nháp!',
     toastSavedToQueue: 'Đã lưu bản khảo sát vào Hàng chờ Đồng bộ IndexedDB!',
-    toastSyncSuccess: 'Đã đồng bộ toàn bộ bản ghi lên Cloud Database thành công!'
+    toastSyncSuccess: 'Đã đồng bộ toàn bộ bản ghi lên Cloud Database thành công!',
+    // Room type options
+    roomTypeClassroom: '🏫 Phòng học',
+    roomTypeComputerLab: '💻 Phòng máy tính',
+    roomTypeLectureHall: '🎭 Hội trường / Giảng đường',
+    roomTypeFacultyOffice: '🏢 Phòng Khoa / Văn phòng',
+    roomTypeRestroom: '🚻 Nhà vệ sinh',
+    roomTypeServerRoom: '⚙️ Tầng hầm / Phòng máy chủ',
+    // Category options
+    categoryHardware: '💻 Máy tính / Thiết bị phần cứng',
+    categoryProjector: '📹 Máy chiếu & Màn hình',
+    categoryAC: '❄️ Điều hòa / Thông gió',
+    categoryElectrical: '⚡ Điện & Chiếu sáng',
+    categoryFurniture: '🪑 Nội thất & Đồ dùng',
+    categoryNetwork: '🌐 Router & Access Point',
+    categorySafety: '🧯 Thiết bị PCCC & An toàn',
+    // Operational status options
+    statusFunctional: '🟢 Hoạt động bình thường',
+    statusMaintenance: '🟡 Cần bảo trì',
+    statusOutOfOrder: '🔴 Hỏng / Ngừng hoạt động',
+    statusCritical: '⚠️ Nguy hiểm khẩn cấp',
+    // Priority level options
+    priorityLow: 'Thấp (Kiểm tra định kỳ)',
+    priorityMedium: 'Trung bình (Tiêu chuẩn)',
+    priorityHigh: 'Cao (Sửa chữa gấp)',
+    priorityEmergency: 'Khẩn cấp (Xử lý ngay)',
+    // Issue tags
+    tagPowerFailure: '⚡ Mất điện / Chập điện',
+    tagPhysicalDamage: '🔨 Hư hỏng vật lý',
+    tagOverheating: '🌡️ Quá nhiệt',
+    tagNoisyOperation: '🔊 Tiếng ồn bất thường',
+    tagDisconnected: '📡 Mất kết nối mạng',
+    tagWaterLeakage: '💧 Rò rỉ nước',
+    tagMissingParts: '🧩 Thiếu linh kiện',
+    // Action required options
+    actionInspectionOnly: '🔍 Chỉ ghi nhận kiểm tra',
+    actionOnSiteMaintenance: '🛠️ Bảo trì tại chỗ',
+    actionPartsReplacement: '🔩 Thay thế linh kiện',
+    actionCompleteReplacement: '🔄 Thay thế toàn bộ thiết bị'
   }
 };
 
