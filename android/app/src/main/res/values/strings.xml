@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VKU Field Survey</string>
+    <string name="title_activity_main">VKU Field Survey</string>
+    <string name="package_name">vn.edu.vku.fieldsurvey</string>
+    <string name="custom_url_scheme">vn.edu.vku.fieldsurvey</string>
+</resources>
