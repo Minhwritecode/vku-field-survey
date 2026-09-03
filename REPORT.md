@@ -12,7 +12,7 @@
 * **Team Members:**
   1. Dinh Tran Tien Minh — Student ID: 23IT162 — Role: Leader — Contribution: [100%]
 * **🔗 Live Demo URL:** `https://vku-field-survey.vercel.app`
-* **💻 GitHub Repository:** `https://github.com/YOUR_GITHUB_USERNAME/vku-field-survey`
+* **💻 GitHub Repository:** `https://github.com/Minhwritecode/vku-field-survey`
 * **📄 Short Technical Report (PDF):** `REPORT.md` (Generated from this document)
 
 ---
