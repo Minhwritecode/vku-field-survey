@@ -52,6 +52,7 @@ export const translations: Record<Language, Record<string, string>> = {
     toastOffline: 'Offline mode active. Surveys will save to IndexedDB drafts!',
     toastSavedToQueue: 'Audit record saved to IndexedDB Sync Queue!',
     toastSyncSuccess: 'All audit records successfully synchronized to Cloud Database!',
+    toastSyncFailed: 'No queued record could be synchronized. They remain queued for retry.',
     // Room type options
     roomTypeClassroom: '🏫 Classroom',
     roomTypeComputerLab: '💻 Computer Lab',
@@ -142,6 +143,7 @@ export const translations: Record<Language, Record<string, string>> = {
     toastOffline: 'Đang ngoại tuyến. Dữ liệu sẽ tự động lưu vào IndexedDB nháp!',
     toastSavedToQueue: 'Đã lưu bản khảo sát vào Hàng chờ Đồng bộ IndexedDB!',
     toastSyncSuccess: 'Đã đồng bộ toàn bộ bản ghi lên Cloud Database thành công!',
+    toastSyncFailed: 'Chưa đồng bộ được bản ghi nào. Dữ liệu vẫn nằm trong hàng chờ để thử lại.',
     // Room type options
     roomTypeClassroom: '🏫 Phòng học',
     roomTypeComputerLab: '💻 Phòng máy tính',

@@ -16,6 +16,9 @@ export interface SurveyData {
   notes: string;
   actionRequired?: string;
   photoBase64?: string;
+  latitude?: number;
+  longitude?: number;
+  locationAccuracy?: number;
   timestamp: number;
   status: 'DRAFT' | 'PENDING_SYNC' | 'SYNCED';
 }

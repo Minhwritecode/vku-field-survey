@@ -1,7 +1,7 @@
 import './style.css';
 import { v4 as uuidv4 } from 'uuid';
 import { saveDraft, addToSyncQueue, getPendingSyncQueue, removeCompletedSync, type SurveyData } from './db';
-import { capturePhoto, listenNetworkStatus, isOnline } from './native';
+import { capturePhoto, getCurrentGPS, listenNetworkStatus, isOnline, sendSyncNotification } from './native';
 import { translations, getStoredLanguage, setStoredLanguage, type Language } from './i18n';
 
 if ('serviceWorker' in navigator) {
@@ -21,6 +21,7 @@ let selectedRating = 5;
 let currentStep = 1;
 let currentCloudRecords: Record<string, SurveyData> = {};
 let currentQueueRecords: SurveyData[] = [];
+let syncInProgress = false;
 
 // Helper to get translated string
 function t(key: string): string {
@@ -245,7 +246,7 @@ function renderAppUI() {
           <div class="photo-picker-box">
             <label id="i18n-photoLabel">${t('photoLabel')}</label>
             <button type="button" class="btn-photo-trigger" id="btn-photo">
-              <span>📷</span> <span id="i18n-btnPhoto">${t('btnPhoto')}</span>
+              <span id="i18n-btnPhoto">${t('btnPhoto')}</span>
             </button>
             <div class="preview-frame" id="preview-frame">
               <img id="photo-preview" class="preview-img" alt="Field Photo Preview" />
@@ -256,7 +257,7 @@ function renderAppUI() {
           <div class="wizard-actions">
             <button type="button" class="btn-secondary" id="btn-prev-3">${t('btnBack')}</button>
             <button type="submit" class="btn-primary" id="btn-submit">
-              <span>💾</span> <span id="i18n-btnSubmit">${t('btnSubmit')}</span>
+              <span id="i18n-btnSubmit">${t('btnSubmit')}</span>
             </button>
           </div>
         </div>
@@ -267,8 +268,8 @@ function renderAppUI() {
     <section class="glass-card">
       <div class="card-header-title">
         <h2 id="i18n-queueTitle">${t('queueTitle')}</h2>
-        <button class="btn-secondary" id="btn-sync" style="padding: 6px 14px; font-size: 12px;">
-          <span id="sync-icon">⚡</span> <span id="i18n-btnSync">${t('btnSync')}</span>
+        <button class="btn-secondary" id="btn-sync" style="padding: 7px 16px; font-size: 12px;">
+          <span id="sync-icon">⚡</span> <span id="i18n-btnSync">${t('btnSync').replace(/^⚡\s*/, '')}</span>
         </button>
       </div>
       <div class="queue-summary-box">
@@ -287,8 +288,8 @@ function renderAppUI() {
     <section class="glass-card">
       <div class="card-header-title">
         <h2 id="i18n-cloudTitle">${t('cloudTitle')}</h2>
-        <button class="btn-secondary" id="btn-fetch-cloud" style="padding: 6px 14px; font-size: 12px;">
-          <span id="cloud-icon">🔄</span> <span id="i18n-btnFetchCloud">${t('btnFetchCloud')}</span>
+        <button class="btn-secondary" id="btn-fetch-cloud" style="padding: 7px 16px; font-size: 12px;">
+          <span id="cloud-icon">🔄</span> <span id="i18n-btnFetchCloud">${t('btnFetchCloud').replace(/^🔄\s*/, '')}</span>
         </button>
       </div>
       <div class="queue-summary-box">
@@ -390,7 +391,16 @@ function attachEventListeners() {
       });
 
       const badge = document.getElementById('rating-badge');
-      if (badge) badge.textContent = `${val} / 5`;
+      if (badge) {
+        const ratingLabels: Record<number, { en: string; vi: string }> = {
+          1: { en: '1 / 5 ⚠️ Critical', vi: '1 / 5 ⚠️ Rất kém' },
+          2: { en: '2 / 5 ⚠️ Poor', vi: '2 / 5 ⚠️ Kém' },
+          3: { en: '3 / 5 ⚖️ Fair', vi: '3 / 5 ⚖️ Trung bình' },
+          4: { en: '4 / 5 👍 Good', vi: '4 / 5 👍 Tốt' },
+          5: { en: '5 / 5 🌟 Excellent', vi: '5 / 5 🌟 Tuyệt vời' }
+        };
+        badge.textContent = ratingLabels[val]?.[currentLanguage] || `${val} / 5`;
+      }
       triggerDraftSave();
     });
   });
@@ -422,6 +432,10 @@ function attachEventListeners() {
   form.addEventListener('input', triggerDraftSave);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Capture the native position at the moment the field record is submitted.
+    // If GPS is unavailable/denied, the survey is still safely queued offline.
+    const gps = await getCurrentGPS();
     const survey: SurveyData = {
       id: currentDraftId,
       inspectorName: (document.getElementById('inspectorName') as HTMLInputElement).value,
@@ -438,12 +452,15 @@ function attachEventListeners() {
       notes: (document.getElementById('notes') as HTMLTextAreaElement).value,
       actionRequired: (document.getElementById('actionRequired') as HTMLSelectElement).value,
       photoBase64: capturedPhotoBase64,
+      latitude: gps?.lat,
+      longitude: gps?.lng,
+      locationAccuracy: gps?.accuracy,
       timestamp: Date.now(),
       status: 'PENDING_SYNC'
     };
 
     await addToSyncQueue(survey);
-    showToast(t('toastSavedToQueue'), 'success');
+    showToast(`${t('toastSavedToQueue')} ${gps ? `📍 (${gps.lat.toFixed(4)}, ${gps.lng.toFixed(4)})` : ''}`, 'success');
     
     // Reset Form
     form.reset();
@@ -491,14 +508,18 @@ function goToStep(step: number) {
 
   document.querySelectorAll('.step-item').forEach(el => {
     const s = Number(el.getAttribute('data-step'));
+    const circle = el.querySelector('.step-circle');
     if (s === step) {
       el.classList.add('active');
       el.classList.remove('completed');
+      if (circle) circle.textContent = s.toString();
     } else if (s < step) {
       el.classList.remove('active');
       el.classList.add('completed');
+      if (circle) circle.textContent = '✓';
     } else {
       el.classList.remove('active', 'completed');
+      if (circle) circle.textContent = s.toString();
     }
   });
 
@@ -582,6 +603,16 @@ function openSurveyDetailsModal(item: SurveyData) {
         <label>Timestamp</label>
         <p style="font-size:12px; color:var(--text-muted);">${new Date(item.timestamp).toLocaleString()}</p>
       </div>
+
+      ${item.latitude !== undefined && item.longitude !== undefined ? `
+        <div class="detail-item">
+          <label>GPS Location</label>
+          <p style="font-size:12px; color:var(--text-muted);">
+            ${item.latitude.toFixed(6)}, ${item.longitude.toFixed(6)}
+            ${item.locationAccuracy !== undefined ? ` (±${Math.round(item.locationAccuracy)} m)` : ''}
+          </p>
+        </div>
+      ` : ''}
 
       ${item.photoBase64 ? `
         <div class="detail-item">
@@ -670,6 +701,7 @@ async function updateQueueUI() {
 
   listEl.innerHTML = queue.map((item, idx) => `
     <div class="queue-item-card">
+      ${item.photoBase64 ? `<img src="${item.photoBase64}" alt="Evidence" style="width: 46px; height: 46px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-glass); flex-shrink: 0;" />` : ''}
       <div class="queue-item-info">
         <h4>${item.building} - ${item.room} (${item.category})</h4>
         <p>⭐ ${item.rating}/5 • ${item.operationalStatus || 'Status N/A'} • ${new Date(item.timestamp).toLocaleTimeString()}</p>
@@ -719,18 +751,29 @@ async function fetchCloudDatabaseRecords() {
     if (cloudCountEl) cloudCountEl.textContent = records.length.toString();
 
     if (cloudListEl) {
-      cloudListEl.innerHTML = records.map((item, idx) => `
+      cloudListEl.innerHTML = records.map((item, idx) => {
+        const bldg = item.building || 'VKU Campus';
+        const rm = item.room || 'General Area';
+        const cat = item.category || 'Equipment';
+        const stars = item.rating !== undefined ? item.rating : 5;
+        const inspector = item.inspectorName ? ` • ${item.inspectorName}` : '';
+        const opStatus = item.operationalStatus || 'Functional';
+        const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleTimeString() : 'Recently';
+
+        return `
         <div class="queue-item-card" style="border-left: 4px solid var(--success);">
+          ${item.photoBase64 ? `<img src="${item.photoBase64}" alt="Evidence" style="width: 46px; height: 46px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-glass); flex-shrink: 0;" />` : ''}
           <div class="queue-item-info">
-            <h4>${item.building} - ${item.room} (${item.category}) ${item.inspectorName ? '• By: ' + item.inspectorName : ''}</h4>
-            <p>⭐ ${item.rating}/5 • ${item.operationalStatus || 'Functional'} • ${new Date(item.timestamp).toLocaleTimeString()}</p>
+            <h4>${bldg} - ${rm} (${cat})${inspector}</h4>
+            <p>⭐ ${stars}/5 • ${opStatus} • ${dateStr}</p>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <span class="tag-pending" style="background: var(--success-bg); color: var(--success); border-color: rgba(16,185,129,0.3);">SYNCED</span>
+            <span class="tag-pending" style="background: var(--success-bg); color: var(--success); border-color: rgba(16,185,129,0.35);">SYNCED</span>
             <button class="btn-view-details" data-cloud-key="${keys[idx]}">View 👁️</button>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
 
       document.querySelectorAll<HTMLButtonElement>('.btn-view-details[data-cloud-key]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -750,43 +793,59 @@ async function fetchCloudDatabaseRecords() {
 
 // Background Sync Trigger to Cloud DB Endpoint
 async function triggerAutoSync() {
+  if (syncInProgress) return;
+
   const queue = await getPendingSyncQueue();
   if (queue.length === 0) return;
+
+  syncInProgress = true;
 
   const syncIcon = document.getElementById('sync-icon');
   if (syncIcon) syncIcon.classList.add('spin');
 
   showToast(`Synchronizing ${queue.length} record(s) to Cloud Database...`, 'info');
 
-  for (const item of queue) {
-    try {
-      console.log('Sending record to Cloud Database:', item);
-      
-      const payload: SurveyData = {
-        ...item,
-        status: 'SYNCED'
-      };
+  let syncedCount = 0;
 
-      const response = await fetch(`${CLOUD_DB_ENDPOINT}/${item.id}.json`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+  try {
+    for (const item of queue) {
+      try {
+        console.log('Sending record to Cloud Database:', item);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const payload: SurveyData = {
+          ...item,
+          status: 'SYNCED'
+        };
+
+        const response = await fetch(`${CLOUD_DB_ENDPOINT}/${item.id}.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        await removeCompletedSync(item.id);
+        syncedCount += 1;
+      } catch (err) {
+        console.error('Cloud synchronization error for item:', item.id, err);
       }
-
-      await removeCompletedSync(item.id);
-    } catch (err) {
-      console.error('Cloud synchronization error for item:', item.id, err);
     }
-  }
 
-  if (syncIcon) syncIcon.classList.remove('spin');
-  showToast(t('toastSyncSuccess'), 'success');
-  updateQueueUI();
-  fetchCloudDatabaseRecords();
+    if (syncedCount > 0) {
+      showToast(t('toastSyncSuccess'), 'success');
+      await sendSyncNotification(syncedCount);
+    } else {
+      showToast(t('toastSyncFailed'), 'warning');
+    }
+  } finally {
+    syncInProgress = false;
+    if (syncIcon) syncIcon.classList.remove('spin');
+    updateQueueUI();
+    fetchCloudDatabaseRecords();
+  }
 }
 
 // Initialize Application UI
